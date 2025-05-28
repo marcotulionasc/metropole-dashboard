@@ -188,18 +188,18 @@ export function LeadStats() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <div className="flex items-center gap-2">
               <Building className="h-5 w-5 text-secondary" />
-              <label className="text-sm font-medium text-white">Filtrar por Produto:</label>
+              <label className="text-sm font-semibold text-white drop-shadow-md">Filtrar por Produto:</label>
             </div>
             <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-              <SelectTrigger className="w-full sm:w-64 bg-primary-light border-white/30 text-white">
+              <SelectTrigger className="w-full sm:w-64 bg-transparent border-white/60 text-white placeholder-white/70 focus:ring-2 focus:ring-secondary focus:border-secondary shadow-md">
                 <SelectValue placeholder="Selecione um produto" />
               </SelectTrigger>
-              <SelectContent className="bg-primary border-white/30">
-                <SelectItem value="all" className="text-white">
+              <SelectContent className="bg-primary border-white/60">
+                <SelectItem value="all" className="text-white hover:bg-secondary/20 focus:bg-secondary/30">
                   Todos os Produtos
                 </SelectItem>
                 {products.map((product) => (
-                  <SelectItem key={product.id} value={product.id} className="text-white">
+                  <SelectItem key={product.id} value={product.id} className="text-white hover:bg-secondary/20 focus:bg-secondary/30">
                     {product.name || product.id}
                   </SelectItem>
                 ))}
