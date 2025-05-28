@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader2, Users, Building, Phone, HelpCircle } from "lucide-react"
+import { Loader2, Users, Building, Phone, HelpCircle, ChevronDown, ChevronRight } from "lucide-react"
 
 interface DashboardStatsProps {
   selectedProduct: string
@@ -28,6 +28,7 @@ export function DashboardStats({ selectedProduct }: DashboardStatsProps) {
     noStatusLeads: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [statusOpen, setStatusOpen] = useState(false)
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -211,79 +212,88 @@ export function DashboardStats({ selectedProduct }: DashboardStatsProps) {
       </div>
 
       <Card className="bg-primary border-white/20">
-        <CardHeader className="p-3">
-          <CardTitle className="text-base sm:text-lg text-white">
-            Distribuição por Status
-            {selectedProduct !== "all" && (
-              <span className="text-xs sm:text-sm font-normal text-white/70 ml-2">
-                ({selectedProduct === "avenida105" ? "Avenida 105" : "City Galleria"})
-              </span>
+        <CardHeader className="p-3 cursor-pointer select-none flex flex-row items-center justify-between" onClick={() => setStatusOpen((v) => !v)}>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base sm:text-lg text-white">
+              Distribuição por Status
+              {selectedProduct !== "all" && (
+                <span className="text-xs sm:text-sm font-normal text-white/70 ml-2">
+                  ({selectedProduct === "avenida105" ? "Avenida 105" : "City Galleria"})
+                </span>
+              )}
+            </CardTitle>
+            {statusOpen ? (
+              <ChevronDown className="ml-2 w-5 h-5 text-white/80" />
+            ) : (
+              <ChevronRight className="ml-2 w-5 h-5 text-white/80" />
             )}
-          </CardTitle>
+          </div>
           <CardDescription className="text-white/80 text-xs sm:text-sm">
             Quantidade de leads em cada etapa do funil
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-3">
-          <div className="space-y-3">
-            {Object.entries(stats.statusCounts).map(([status, count]) => {
-              const percentage = stats.totalLeads > 0 ? Math.round((count / stats.totalLeads) * 100) : 0
-              let statusColor = ""
-              let statusLabel = ""
+        {statusOpen && (
+          <CardContent className="p-3">
+            <div className="space-y-3">
+              {Object.entries(stats.statusCounts).map(([status, count]) => {
+                const percentage = stats.totalLeads > 0 ? Math.round((count / stats.totalLeads) * 100) : 0
+                let statusColor = ""
+                let statusLabel = ""
 
-              switch (status) {
-                case "NOVO":
-                  statusColor = "bg-blue-500"
-                  statusLabel = "Novo"
-                  break
-                case "CONTATO_FEITO":
-                  statusColor = "bg-yellow-500"
-                  statusLabel = "Contato Feito"
-                  break
-                case "QUALIFICADO":
-                  statusColor = "bg-green-500"
-                  statusLabel = "Qualificado"
-                  break
-                case "NÃO_QUALIFICADO":
-                  statusColor = "bg-red-400"
-                  statusLabel = "Não Qualificado"
-                  break
-                case "QUALIFICADO_OP":
-                  statusColor = "bg-purple-500"
-                  statusLabel = "Qualificado OP"
-                  break
-                case "PROPOSTA":
-                  statusColor = "bg-orange-500"
-                  statusLabel = "Proposta"
-                  break
-                case "FECHADO":
-                  statusColor = "bg-teal-500"
-                  statusLabel = "Fechado"
-                  break
-                default:
-                  statusColor = "bg-gray-500"
-                  statusLabel = status
-              }
+                switch (status) {
+                  case "NOVO":
+                    statusColor = "bg-blue-500"
+                    statusLabel = "Novo"
+                    break
+                  case "CONTATO_FEITO":
+                    statusColor = "bg-yellow-500"
+                    statusLabel = "Contato Feito"
+                    break
+                  case "QUALIFICADO":
+                    statusColor = "bg-green-500"
+                    statusLabel = "Qualificado"
+                    break
+                  case "NÃO_QUALIFICADO":
+                    statusColor = "bg-red-400"
+                    statusLabel = "Não Qualificado"
+                    break
+                  case "QUALIFICADO_OP":
+                    statusColor = "bg-purple-500"
+                    statusLabel = "Qualificado OP"
+                    break
+                  case "PROPOSTA":
+                    statusColor = "bg-orange-500"
+                    statusLabel = "Proposta"
+                    break
+                  case "FECHADO":
+                    statusColor = "bg-teal-500"
+                    statusLabel = "Fechado"
+                    break
+                  default:
+                    statusColor = "bg-gray-500"
+                    statusLabel = status
+                }
 
-              return (
-                <div key={status} className="space-y-1">
-                  <div className="flex justify-between">
-                    <div className="flex items-center">
-                      <div className={`w-2 h-2 rounded-full ${statusColor} mr-2`}></div>
-                      <span className="text-xs sm:text-sm font-medium text-white">{statusLabel}</span>
+                return (
+                  <div key={status} className="space-y-1">
+                    <div className="flex justify-between">
+                      <div className="flex items-center">
+                        <div className={`w-2 h-2 rounded-full ${statusColor} mr-2`}></div>
+                        <span className="text-xs sm:text-sm font-medium text-white">{statusLabel}</span>
+                      </div>
+                      <span className="text-xs sm:text-sm text-white/70">
+                        {count} <span className="hidden sm:inline">leads</span> ({percentage}%)
+                      </span>
                     </div>
-                    <span className="text-xs sm:text-sm text-white/70">
-                      {count} <span className="hidden sm:inline">leads</span> ({percentage}%)
-                    </span>
+                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                      <div className={`h-full ${statusColor}`} style={{ width: `${percentage}%` }}></div>
+                    </div>
                   </div>
-                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div className={`h-full ${statusColor}`} style={{ width: `${percentage}%` }}></div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
+                )
+              })}
+            </div>
+          </CardContent>
+        )}
       </Card>
     </div>
   )
